@@ -1,4 +1,5 @@
 import type { MetaFunction } from '@remix-run/node';
+import Countdown from '~/components/countdown';
 
 export const meta: MetaFunction = () => {
   return [
@@ -8,44 +9,57 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  function timeUntilNextOccurrence(targetTime: string): {
+    hours: number;
+    minutes: number;
+    seconds: number;
+  } {
+    // Step 1: Get the current date and time
+    const now = new Date();
+
+    // Step 2: Extract hours and minutes from the target time (formatted as "HH:mm")
+    const [targetHour, targetMinute] = targetTime.split(':').map(Number);
+
+    // Step 3: Create a Date object for the target time today
+    const nextOccurrence = new Date(now);
+    nextOccurrence.setHours(targetHour, targetMinute, 0, 0);
+
+    // Step 4: If the target time today has already passed, set the target for the next day
+    if (nextOccurrence <= now) {
+      nextOccurrence.setDate(nextOccurrence.getDate() + 1);
+    }
+
+    // Step 5: Calculate the difference in milliseconds
+    const diffInMs = nextOccurrence.getTime() - now.getTime();
+
+    // Step 6: Convert milliseconds to hours, minutes, and seconds
+    const hours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffInMs % (1000 * 60)) / 1000);
+
+    // Step 7: Return the result
+    return { hours, minutes, seconds };
+  }
+
+  const timeUntilFollowingNoon = timeUntilNextOccurrence('12:00');
+  const timeUntilFollowingNinePM = timeUntilNextOccurrence('21:00');
+
   return (
     <div className="h-screen bg-gray-800 text-white p-6">
       <h1 className="text-center text-4xl">Time Until</h1>
-      <div className="mt-8 flex justify-center flex-col items-center border rounded-lg p-4 ">
-        <h2 className="text-3xl">Noon</h2>
-        <div className="flex mt-2">
-          <div className="flex flex-col items-center w-28">
-            <span>3</span>
-            <span className="font-bold">HOURS</span>
-          </div>
-          <div className="flex flex-col items-center w-28">
-            <span>3</span>
-            <span className="font-bold">MINUTES</span>
-          </div>
-          <div className="flex flex-col items-center w-28">
-            <span>3</span>
-            <span className="font-bold">MINUTES</span>
-          </div>
-        </div>
-      </div>
 
-      <div className="mt-8 flex justify-center flex-col items-center border rounded-lg p-4 ">
-        <h2 className="text-3xl">9PM</h2>
-        <div className="flex mt-2">
-          <div className="flex flex-col items-center w-28">
-            <span>3</span>
-            <span className="font-bold">HOURS</span>
-          </div>
-          <div className="flex flex-col items-center w-28">
-            <span>3</span>
-            <span className="font-bold">MINUTES</span>
-          </div>
-          <div className="flex flex-col items-center w-28">
-            <span>3</span>
-            <span className="font-bold">MINUTES</span>
-          </div>
-        </div>
-      </div>
+      <Countdown
+        deadline="noon"
+        hours={timeUntilFollowingNoon.hours}
+        minutes={timeUntilFollowingNoon.minutes}
+        seconds={timeUntilFollowingNoon.seconds}
+      />
+      <Countdown
+        deadline="9PM"
+        hours={timeUntilFollowingNinePM.hours}
+        minutes={timeUntilFollowingNinePM.minutes}
+        seconds={timeUntilFollowingNinePM.seconds}
+      />
     </div>
   );
 }
