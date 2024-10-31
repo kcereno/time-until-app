@@ -1,5 +1,5 @@
 import type { MetaFunction } from '@remix-run/node';
-import Countdown from '~/components/countdown';
+import Countdown from '~/components/Countdown';
 
 export const meta: MetaFunction = () => {
   return [
