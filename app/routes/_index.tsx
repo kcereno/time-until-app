@@ -4,7 +4,7 @@ import { timeUntilNextOccurrence } from '~/utils/time';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'New Remix App' },
+    { title: 'Time Until App' },
     { name: 'description', content: 'Welcome to Remix!' },
   ];
 };
